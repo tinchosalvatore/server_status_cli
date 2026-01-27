@@ -3,6 +3,7 @@ import time
 import json
 import os
 import sys
+import argparse
 from datetime import datetime
 from dataclasses import dataclass
 from typing import List, Dict, Any
@@ -152,11 +153,46 @@ class UptimeMonitor:
                 # Espera asíncrona
                 await asyncio.sleep(REFRESH_RATE)
 
+    async def run_once(self):
+        """Ejecuta un único chequeo y muestra la tabla."""
+        if not self.load_sites():
+            console.print("[red]Error: No se encontró db.json. Ejecuta db.py primero.[/]")
+            return
+
+        console.print("[yellow]Ejecutando un único chequeo...[/]")
+
+        async with httpx.AsyncClient() as client:
+            tasks = [self.check_site(client, site) for site in self.sites]
+            results = await asyncio.gather(*tasks)
+
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        table = self.generate_table(results)
+        
+        panel = Panel(
+            Align.center(table),
+            title=f"[bold cyan]🚀 UPTIME STATUS - {now}[/]",
+            border_style="blue"
+        )
+        
+        console.print(panel)
+
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Monitor de estado de sitios web.")
+    parser.add_argument("-f", "--fast", action="store_true", help="Si se especifica, ejecuta el chequeo una sola vez y sale.")
+    args = parser.parse_args()
+
     monitor = UptimeMonitor(DB_FILE)
+
     try:
-        asyncio.run(monitor.run_loop())
+        if args.fast:
+            asyncio.run(monitor.run_once())
+        else:
+            asyncio.run(monitor.run_loop())
     except KeyboardInterrupt:
         console.clear()
         console.print("\n[bold green]👋 Monitor detenido correctamente.[/]")
         sys.exit(0)
+    except Exception as e:
+        console.print(f"[bold red]Ha ocurrido un error inesperado: {e}[/]")
+        sys.exit(1)
