@@ -9,6 +9,7 @@ Real-time website availability and latency monitoring tool, designed to run dire
 * **Visual Interface (TUI):** Tables with conditional formatting, status indicators (✅/❌), and colors based on latency.
 * **Alerts:** Visual (intense red) and audible (system beep) feedback when a service goes down or returns an error (500, 404, DNS, etc.).
 * **Persistent Management:** Lightweight JSON database to manage the list of clients and services without touching the code.
+* **HTML Reports:** Generates a professional, dark-themed HTML report with the check results, saved in the `reports` directory.
 
 ## 📂 Project Structure
 
@@ -16,11 +17,13 @@ Real-time website availability and latency monitoring tool, designed to run dire
 .
 ├── monitor.py        # Main monitoring script (Dashboard)
 ├── db.py             # CLI for database management (CRUD)
-├── db.json           # Site database (automatically generated)
+├── report.py         # Report generation logic
+├── db.json           # Site database
+├── templates/        # HTML and CSS templates for reports
+├── reports/          # Directory where reports are saved
 ├── requirements.txt  # Project dependencies
 ├── setup.sh          # Automatic installation script
 └── README.md         # Documentation
-
 ```
 
 ## 🛠️ Installation
@@ -36,7 +39,7 @@ cd server_status_cli
 ```
 
 2. **Run the setup:**
-This script will create the virtual environment (`venv`) and install the necessary dependencies (`httpx`, `rich`).
+This script will create the virtual environment (`venv`) and install the necessary dependencies (`httpx`, `rich`, `jinja2`).
 
 ```bash
 chmod +x setup.sh
@@ -68,15 +71,22 @@ python db.py
 
 ### 2. 📊 Start Monitor (`monitor.py`)
 
-Once the sites are configured, launch the monitor. It will read the configuration and start the check cycle.
+Once the sites are configured, launch the monitor.
 
-```bash
-python monitor.py
+*   **For real-time monitoring:**
+    ```bash
+    python monitor.py
+    ```
+    * The dashboard will update every 10 seconds (configurable).
+    * Press `Ctrl+C` to stop.
 
-```
-
-* The dashboard will update every 10 seconds (configurable in the code).
-* Press `Ctrl+C` to stop monitoring safely.
+*   **To generate an HTML report:**
+    ```bash
+    python monitor.py -r
+    # or
+    python monitor.py --report
+    ```
+    * This command runs a single check and saves a detailed HTML report in the `reports/` directory.
 
 ## ⚙️ Requirements
 
@@ -88,6 +98,7 @@ python monitor.py
 
 * **[Rich](https://github.com/Textualize/rich):** For rendering tables, panels, and progress bars.
 * **[HTTPX](https://github.com/encode/httpx):** Next-generation asynchronous HTTP client.
+* **[Jinja2](https://jinja.palletsprojects.com/):** For HTML template rendering.
 
 ---
 

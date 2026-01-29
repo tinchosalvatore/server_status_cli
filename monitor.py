@@ -5,7 +5,7 @@ import os
 import sys
 import argparse
 from datetime import datetime
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import List, Dict, Any
 
 import httpx
@@ -14,6 +14,8 @@ from rich.table import Table
 from rich.panel import Panel
 from rich.align import Align
 from rich.live import Live # Usaremos Live para un dashboard más fluido
+
+from report import generate_report
 
 # Configuración
 DB_FILE = "db.json"
@@ -153,11 +155,11 @@ class UptimeMonitor:
                 # Espera asíncrona
                 await asyncio.sleep(REFRESH_RATE)
 
-    async def run_once(self):
-        """Ejecuta un único chequeo y muestra la tabla."""
+    async def run_once(self) -> List[CheckResult] | None:
+        """Ejecuta un único chequeo y retorna los resultados."""
         if not self.load_sites():
             console.print("[red]Error: No se encontró db.json. Ejecuta db.py primero.[/]")
-            return
+            return None
 
         console.print("[yellow]Ejecutando un único chequeo...[/]")
 
@@ -175,17 +177,26 @@ class UptimeMonitor:
         )
         
         console.print(panel)
+        return results
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Monitor de estado de sitios web.")
     parser.add_argument("-f", "--fast", action="store_true", help="Si se especifica, ejecuta el chequeo una sola vez y sale.")
+    parser.add_argument("-r", "--report", action="store_true", help="Genera un reporte HTML con el estado actual.")
     args = parser.parse_args()
 
     monitor = UptimeMonitor(DB_FILE)
 
     try:
-        if args.fast:
+        if args.report:
+            results = asyncio.run(monitor.run_once())
+            if results:
+                # Convertimos los objetos CheckResult a dicts
+                results_dicts = [asdict(r) for r in results]
+                report_path = generate_report(results_dicts)
+                console.print(f"\n[bold green]✔ Reporte generado exitosamente en:[/bold green] [cyan]{os.path.abspath(report_path)}[/]")
+        elif args.fast:
             asyncio.run(monitor.run_once())
         else:
             asyncio.run(monitor.run_loop())
