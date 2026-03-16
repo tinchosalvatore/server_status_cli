@@ -6,120 +6,99 @@ Real-time website availability and latency monitoring tool, designed to run dire
 
 ## ✨ Features
 
-* **Real-Time Monitoring:** Interactive dashboard that updates automatically (no infinite scroll).
-* **High Performance:** Asynchronous engine (`asyncio` + `httpx`) capable of checking multiple sites simultaneously without blocking.
-* **Visual Interface (TUI):** Tables with conditional formatting, status indicators (✅/❌), and colors based on latency.
-* **Alerts:** Visual (intense red) and audible (system beep) feedback when a service goes down or returns an error (500, 404, DNS, etc.).
-* **Persistent Management:** Lightweight JSON database to manage the list of clients and services without touching the code.
-* **HTML Reports:** Generates a professional, dark-themed HTML report with the check results, saved in the `reports` directory.
+* **Real-Time Monitoring:** Interactive dashboard that updates automatically.
+* **Multi-language Support:** Fully localized in English and Spanish.
+* **Global Commands:** Run the tool from anywhere using `sstatus`.
+* **High Performance:** Asynchronous engine (`asyncio` + `httpx`) capable of checking multiple sites simultaneously.
+* **Visual Interface (TUI):** Tables with conditional formatting and latency-based colors.
+* **Alerts:** Visual and audible feedback (system beep) on service failures.
+* **HTML Reports:** Professional dark-themed reports saved in the `reports/` directory.
 
 ---
 ## 📂 Project Structure
 
 ```text
 .
-├── monitor.py        # Main monitoring script (Dashboard)
-├── db.py             # CLI for database management (CRUD)
+├── monitor.py        # Main monitoring script
+├── db.py             # Database management CLI
+├── i18n.py           # Internationalization engine
 ├── report.py         # Report generation logic
 ├── db.json           # Site database
-├── templates/        # HTML and CSS templates for reports
-├── reports/          # Directory where reports are saved
-├── requirements.txt  # Project dependencies
-├── setup.sh          # Automatic installation script
-└── README.md         # Documentation
+├── config.json       # App configuration (language, etc.)
+├── templates/        # HTML/CSS templates for reports
+├── reports/          # Generated reports directory
+├── setup.sh          # Interactive installer
+└── uninstall.sh      # Interactive uninstaller
 ```
 
 ## 🛠️ Installation
 
-The project includes an automated setup script for Unix/Linux/Mac environments.
+The project includes an interactive setup script that configures a virtual environment and creates global commands.
 
 1. **Clone the repository:**
-
 ```bash
 git clone https://github.com/tinchosalvatore/server_status_cli.git
 cd server_status_cli
-
 ```
 
 2. **Run the setup:**
-This script will create the virtual environment (`venv`) and install the necessary dependencies (`httpx`, `rich`, `jinja2`).
-
+Choose your preferred language during the process.
 ```bash
 chmod +x setup.sh
 ./setup.sh
-
 ```
 
-3. **Activate the environment:**
-
-```bash
-source venv/bin/activate
-
-```
+*Note: The script creates shims in `~/.local/bin`. Make sure this directory is in your `PATH`.*
 
 ---
 ## 🚀 Usage
 
-The workflow is divided into two steps: configuration and monitoring.
-
-### 1. 💾 Site Management (`db.py`)
-
-Use this script to add, list, or remove the services you want to monitor.
-
+### 1. 💾 Site Management
+Use the database manager to add or remove services.
 ```bash
-python db.py
-
+sstatus-db
 ```
 
-*Follow the on-screen instructions to add the client name, service, and URL.*
+### 2. 📊 Start Monitor
+Launch the real-time dashboard:
+```bash
+sstatus
+```
 
-### 2. 📊 Start Monitor (`monitor.py`)
-
-Once the sites are configured, launch the monitor.
-
-*   **For real-time monitoring:**
+*   **Fast check (single run):**
     ```bash
-    python monitor.py
+    sstatus -f
     ```
-    * The dashboard will update every 10 seconds (configurable).
-    * Press `Ctrl+C` to stop.
-
-*   **Instant unique monitoring:**
+*   **Generate HTML Report:**
     ```bash
-    python monitor.py -f
-    # or
-    python monitor.py --fast
+    sstatus -r
     ```
-    * This command runs a single check, without consuming the hole terminal use.
-
-*   **To generate an HTML report:**
+*   **Combine for maximum efficiency:**
     ```bash
-    python monitor.py -r
-    # or
-    python monitor.py --report
+    sstatus -f -r
     ```
-    * This command runs a single check and saves a detailed HTML with CSS style report in the `reports/` directory.
 
-*   **Feel free to combine the two commands**
-    ```bash
-    python monitor.py -f -r
-    # or
-    python monitor.py --fast --report
-    ```
-    * For me this is the most efficient way to check multiple sites at once and have the good looking output.
+---
+## 🗑️ Uninstallation
+
+To completely remove the application and its environment:
+```bash
+chmod +x uninstall.sh
+./uninstall.sh
+```
+*The script will ask if you want to keep or delete your site database and configuration.*
 
 ---
 ## ⚙️ Requirements
 
 * Python 3.10 or higher.
-* Internet connection.
 * Terminal with color support (Standard ANSI/TrueColor).
 
 ## 📦 Main Libraries
 
-* **[Rich](https://github.com/Textualize/rich):** For rendering tables, panels, and progress bars.
-* **[HTTPX](https://github.com/encode/httpx):** Next-generation asynchronous HTTP client.
-* **[Jinja2](https://jinja.palletsprojects.com/):** For HTML template rendering.
+* **[Rich](https://github.com/Textualize/rich):** TUI rendering.
+* **[HTTPX](https://github.com/encode/httpx):** Asynchronous HTTP client.
+* **[Jinja2](https://jinja.palletsprojects.com/):** HTML templates.
 
 ---
 

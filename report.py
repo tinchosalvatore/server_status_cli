@@ -3,11 +3,7 @@ import json
 from datetime import datetime
 from typing import List
 from jinja2 import Environment, FileSystemLoader
-from dataclasses import asdict
-
-# Asumimos que CheckResult se pasará desde monitor.py.
-# Para evitar una dependencia circular, lo definimos aquí también si es necesario,
-# o simplemente esperamos un dict. Para simplicidad, esperaremos dicts.
+from i18n import get_all_strings
 
 def get_latency_class(latency: float) -> str:
     """Retorna una clase CSS basada en la latencia."""
@@ -29,25 +25,30 @@ def generate_report(results: List[dict], output_dir: str = "reports"):
     env = Environment(loader=FileSystemLoader("templates"))
     template = env.get_template("report_template.html")
 
-    # 3. Procesar datos para la plantilla
+    # 3. Obtener traducciones
+    i18n = get_all_strings()
+
+    # 4. Procesar datos para la plantilla
     total_services = len(results)
     total_up = sum(1 for r in results if r['is_success'])
     total_down = total_services - total_up
 
-    # Añadir información de estilo de latencia
+    # Añadir información de estilo de latencia y status localizado
     for result in results:
         result['latency_class'] = get_latency_class(result['latency'])
+        result['status_label'] = i18n['report_status_online'] if result['is_success'] else i18n['report_status_offline']
 
-    # 4. Renderizar la plantilla
+    # 5. Renderizar la plantilla
     html_content = template.render(
         results=results,
         total_services=total_services,
         total_up=total_up,
         total_down=total_down,
-        generation_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        generation_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        i18n=i18n
     )
 
-    # 5. Guardar el archivo
+    # 6. Guardar el archivo
     report_filename = f"uptime_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
     report_path = os.path.join(output_dir, report_filename)
 

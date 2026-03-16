@@ -5,6 +5,8 @@ from rich.table import Table
 from rich.prompt import Prompt
 from rich.panel import Panel
 
+from i18n import _
+
 # Constantes
 DB_FILE = "db.json"
 console = Console()
@@ -17,25 +19,25 @@ def load_db() -> list[dict[str, str]]:
         with open(DB_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except json.JSONDecodeError:
-        console.print("[bold red]⚠ Error al leer el archivo JSON. Se iniciará una lista vacía.[/]")
+        console.print(f"[bold red]{_('db_read_error')}[/]")
         return []
 
 def save_db(data: list[dict[str, str]]):
     """Guarda la lista actualizada en el archivo JSON."""
     with open(DB_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
-    console.print(f"[green]✔ Base de datos guardada en {DB_FILE}[/green]")
+    console.print(f"[green]{_('db_save_success')} {DB_FILE}[/green]")
 
 def list_sites(data: list[dict[str, str]]):
     """Muestra la tabla actual de sitios configurados."""
     if not data:
-        console.print(Panel("La base de datos está vacía.", style="yellow"))
+        console.print(Panel(_('db_empty'), style="yellow"))
         return
 
-    table = Table(title="Sitios Configurados")
+    table = Table(title=_('db_table_title'))
     table.add_column("ID", justify="right", style="cyan", no_wrap=True)
-    table.add_column("Cliente", style="magenta")
-    table.add_column("Servicio", style="white")
+    table.add_column(_("col_client"), style="magenta")
+    table.add_column(_("col_service"), style="white")
     table.add_column("URL", style="green")
 
     for idx, site in enumerate(data):
@@ -45,34 +47,34 @@ def list_sites(data: list[dict[str, str]]):
 
 def add_site(current_data: list[dict[str, str]]):
     """Interactivamente agrega un nuevo sitio."""
-    console.print("\n[bold cyan]Agregar Nuevo Sitio[/bold cyan]")
+    console.print(f"\n[bold cyan]{_('db_add_title')}[/bold cyan]")
     
-    client = Prompt.ask("👤 Nombre del Cliente")
-    name = Prompt.ask("🏷️  Nombre del Servicio (ej. Landing, API)")
+    client = Prompt.ask(_('db_prompt_client'))
+    name = Prompt.ask(_('db_prompt_service'))
     
     # Validación simple de URL
     while True:
-        url = Prompt.ask("🔗 URL del sitio")
+        url = Prompt.ask(_('db_prompt_url'))
         if url.startswith("http://") or url.startswith("https://"):
             break
-        console.print("[red]La URL debe comenzar con http:// o https://[/red]")
+        console.print(f"[red]{_('db_url_error')}[/red]")
 
     new_entry = {"client": client, "name": name, "url": url}
     current_data.append(new_entry)
     save_db(current_data)
-    console.print("[bold green]Sitio agregado exitosamente![/]")
+    console.print(f"[bold green]{_('db_add_success')}[/]")
 
 def delete_site(current_data: list[dict[str, str]]):
     """Elimina un sitio seleccionado por su ID."""
     if not current_data:
-        console.print("[yellow]⚠ No hay sitios para eliminar.[/]")
+        console.print(f"[yellow]{_('db_no_sites_delete')}[/]")
         return
 
     # Mostramos la lista primero para que vea el ID
     list_sites(current_data)
     
-    console.print("\n[bold red]Eliminar Sitio[/bold red]")
-    choice = Prompt.ask("Ingresa el [cyan]ID[/] del sitio a borrar (o 'c' para cancelar)")
+    console.print(f"\n[bold red]{_('db_delete_title')}[/bold red]")
+    choice = Prompt.ask(_('db_delete_prompt'))
 
     if choice.lower() == 'c':
         return
@@ -82,19 +84,24 @@ def delete_site(current_data: list[dict[str, str]]):
         if 0 <= idx < len(current_data):
             removed = current_data.pop(idx)
             save_db(current_data)
-            console.print(f"[bold red]🗑️ Sitio eliminado: {removed['name']} ({removed['url']})[/]")
+            console.print(f"[bold red]{_('db_delete_success')} {removed['name']} ({removed['url']})[/]")
         else:
-            console.print("[red]❌ ID inválido.[/]")
+            console.print(f"[red]{_('db_invalid_id')}[/red]")
     except ValueError:
-        console.print("[red]❌ Debes ingresar un número.[/]")
+        console.print(f"[red]{_('db_invalid_number')}[/red]")
 
 def main():
-    console.print(Panel("[bold blue]🔧 Monitor Manager v1.1[/bold blue]", expand=False))
+    console.print(Panel(
+        f"[bold blue]{_('db_manager_title')}[/bold blue]", 
+        subtitle="[dim]tool by tinchosalvatore[/]",
+        expand=False
+    ))
     
     while True:
         data = load_db()
-        console.print("\n[1] Agregar sitio  [2] Listar sitios  [3] Eliminar sitio  [4] Salir")
-        choice = Prompt.ask("Selecciona una opción", choices=["1", "2", "3", "4"], default="1")
+        menu_text = f"\n[1] {_('db_menu_1')}  [2] {_('db_menu_2')}  [3] {_('db_menu_3')}  [4] {_('db_menu_4')}"
+        console.print(menu_text)
+        choice = Prompt.ask(_('db_menu_option'), choices=["1", "2", "3", "4"], default="1")
 
         if choice == "1":
             add_site(data)
@@ -103,7 +110,7 @@ def main():
         elif choice == "3":
             delete_site(data)
         elif choice == "4":
-            console.print("[italic]Hasta luego![/italic]")
+            console.print(f"[italic]{_('db_bye')}[/italic]")
             break
 
 if __name__ == "__main__":

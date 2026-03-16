@@ -6,32 +6,34 @@ Herramienta de monitoreo de disponibilidad y latencia de sitios web en tiempo re
 
 ## ✨ Características
 
-* **Monitoreo en Tiempo Real:** Dashboard interactivo que se actualiza automáticamente (sin scroll infinito).
-* **Alto Rendimiento:** Motor asíncrono (`asyncio` + `httpx`) capaz de chequear múltiples sitios simultáneamente sin bloqueos.
-* **Interfaz Visual (TUI):** Tablas con formato condicional, indicadores de estado (✅/❌) y colores según latencia.
-* **Alertas:** Feedback visual (rojo intenso) y sonoro (system beep) cuando un servicio cae o devuelve un error (500, 404, DNS, etc.).
-* **Gestión Persistente:** Base de datos ligera en JSON para administrar la lista de clientes y servicios sin tocar el código.
-* **Reportes en HTML:** Genera un reporte HTML profesional con temática oscura que incluye los resultados de los chequeos, guardado en el directorio `reports`.
+* **Monitoreo en Tiempo Real:** Dashboard interactivo que se actualiza automáticamente.
+* **Soporte Multi-lenguaje:** Totalmente localizado en Inglés y Español.
+* **Comandos Globales:** Ejecuta la herramienta desde cualquier parte usando `sstatus`.
+* **Alto Rendimiento:** Motor asíncrono (`asyncio` + `httpx`) capaz de chequear múltiples sitios simultáneamente.
+* **Interfaz Visual (TUI):** Tablas con formato condicional y colores basados en latencia.
+* **Alertas:** Feedback visual y sonoro (system beep) ante fallos en los servicios.
+* **Reportes en HTML:** Reportes profesionales con temática oscura guardados en el directorio `reports/`.
 
 ---
 ## 📂 Estructura del Proyecto
 
 ```text
 .
-├── monitor.py        # Script principal de monitoreo (Dashboard)
-├── db.py             # CLI para gestión de la base de datos (CRUD)
-├── report.py         # Lógica para generar reportes
+├── monitor.py        # Script principal de monitoreo
+├── db.py             # CLI para gestión de base de datos
+├── i18n.py           # Motor de internacionalización
+├── report.py         # Lógica para generación de reportes
 ├── db.json           # Base de datos de sitios
-├── templates/        # Plantillas HTML y CSS para los reportes
-├── reports/          # Directorio donde se guardan los reportes
-├── requirements.txt  # Dependencias del proyecto
-├── setup.sh          # Script de instalación automática
-└── README.md         # Documentación
+├── config.json       # Configuración de la app (idioma, etc.)
+├── templates/        # Plantillas HTML/CSS para reportes
+├── reports/          # Directorio de reportes generados
+├── setup.sh          # Instalador interactivo
+└── uninstall.sh      # Desinstalador interactivo
 ```
 
 ## 🛠️ Instalación
 
-El proyecto incluye un script de configuración automatizado para entornos Unix/Linux/Mac.
+El proyecto incluye un script de configuración interactivo que configura un entorno virtual y crea comandos globales.
 
 1. **Clonar el repositorio:**
 ```bash
@@ -40,79 +42,63 @@ cd server_status_cli
 ```
 
 2. **Ejecutar el setup:**
-Este script creará el entorno virtual (`venv`) e instalará las dependencias necesarias (`httpx`, `rich`, `jinja2`).
+Elige tu idioma preferido durante el proceso.
 ```bash
 chmod +x setup.sh
 ./setup.sh
 ```
 
-3. **Activar el entorno:**
-```bash
-source venv/bin/activate
-```
+*Nota: El script crea accesos directos en `~/.local/bin`. Asegúrate de que este directorio esté en tu `PATH`.*
 
 ---
 ## 🚀 Uso
 
-El flujo de trabajo se divide en dos pasos: configuración y monitoreo.
-
-### 1. 💾 Gestión de Sitios (`db.py`)
-
-Utiliza este script para agregar, listar o eliminar los servicios que deseas monitorear.
-
+### 1. 💾 Gestión de Sitios
+Usa el gestor de base de datos para añadir o eliminar servicios.
 ```bash
-python db.py
+sstatus-db
 ```
 
-*Sigue las instrucciones en pantalla para añadir el nombre del cliente, el servicio y la URL.*
+### 2. 📊 Iniciar Monitor
+Lanza el dashboard en tiempo real:
+```bash
+sstatus
+```
 
-### 2. 📊 Iniciar Monitor (`monitor.py`)
-
-Una vez configurados los sitios, lanza el monitor.
-
-*   **Para monitoreo en tiempo real:**
+*   **Chequeo rápido (ejecución única):**
     ```bash
-    python monitor.py
+    sstatus -f
     ```
-    * El dashboard se actualizará cada 10 segundos (configurable).
-    * Presiona `Ctrl+C` para detenerlo.
-
-*   **Monitoreo único instantáneo:**
+*   **Generar Reporte HTML:**
     ```bash
-    python monitor.py -f
-    # o
-    python monitor.py --fast
+    sstatus -r
     ```
-    * Este comando ejecuta un único chequeo, sin consumir toda la terminal.
-
-*   **Para generar un reporte en HTML:**
+*   **Combinar para máxima eficiencia:**
     ```bash
-    python monitor.py -r
-    # o
-    python monitor.py --report
+    sstatus -f -r
     ```
-    * Este comando ejecuta un único chequeo y guarda un reporte HTML detallado con estilos CSS en el directorio `reports/`.
 
-*   **Siéntete libre de combinar ambos comandos:**
-    ```bash
-    python monitor.py -f -r
-    # o
-    python monitor.py --fast --report
-    ```
-    * Esta es la forma más eficiente de chequear múltiples sitios a la vez y obtener una salida visualmente atractiva.
+---
+## 🗑️ Desinstalación
+
+Para eliminar completamente la aplicación y su entorno:
+```bash
+chmod +x uninstall.sh
+./uninstall.sh
+```
+*El script preguntará si quieres mantener o borrar tu base de datos de sitios y configuración.*
 
 ---
 ## ⚙️ Requisitos
 
 * Python 3.10 o superior.
-* Conexión a internet.
 * Terminal con soporte de colores (Standard ANSI/TrueColor).
 
 ## 📦 Librerías Principales
 
-* **[Rich](https://github.com/Textualize/rich):** Para el renderizado de tablas, paneles y barras de progreso.
-* **[HTTPX](https://github.com/encode/httpx):** Cliente HTTP asíncrono de próxima generación.
-* **[Jinja2](https://jinja.palletsprojects.com/):** Para el renderizado de plantillas HTML.
+* **[Rich](https://github.com/Textualize/rich):** Renderizado de TUI.
+* **[HTTPX](https://github.com/encode/httpx):** Cliente HTTP asíncrono.
+* **[Jinja2](https://jinja.palletsprojects.com/):** Plantillas HTML.
 
 ---
 

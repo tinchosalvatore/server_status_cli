@@ -13,9 +13,10 @@ from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
 from rich.align import Align
-from rich.live import Live # Usaremos Live para un dashboard más fluido
+from rich.live import Live
 
 from report import generate_report
+from i18n import _
 
 # Configuración
 DB_FILE = "db.json"
@@ -83,11 +84,11 @@ class UptimeMonitor:
     def generate_table(self, results: List[CheckResult]) -> Table:
         """Genera la tabla Rich basada en resultados."""
         table = Table(show_header=True, header_style="bold white", border_style="dim", expand=True)
-        table.add_column("Cliente", style="cyan")
-        table.add_column("Servicio", style="white")
-        table.add_column("Status", justify="center")
-        table.add_column("Code", justify="right")
-        table.add_column("Latencia", justify="right")
+        table.add_column(_("col_client"), style="cyan")
+        table.add_column(_("col_service"), style="white")
+        table.add_column(_("col_status"), justify="center")
+        table.add_column(_("col_code"), justify="right")
+        table.add_column(_("col_latency"), justify="right")
 
         errors_found = False
 
@@ -123,11 +124,11 @@ class UptimeMonitor:
 
     async def run_loop(self):
         if not self.load_sites():
-            console.print("[red]Error: No se encontró db.json. Ejecuta manager.py primero.[/]")
+            console.print(f"[red]{_('error_db_not_found')}[/]")
             return
 
         console.clear()
-        console.print("[bold yellow]Iniciando monitor en tiempo real... (Ctrl+C para salir)[/]")
+        console.print(f"[bold yellow]{_('starting_monitor')}[/]")
 
         # Usamos Live de Rich para actualizar la tabla en el mismo lugar
         with Live(console=console, refresh_per_second=4) as live:
@@ -145,8 +146,8 @@ class UptimeMonitor:
                 
                 panel = Panel(
                     Align.center(table),
-                    title=f"[bold cyan]🚀 UPTIME MONITOR - {now}[/]",
-                    subtitle=f"[dim]Próxima actualización en {REFRESH_RATE}s[/]",
+                    title=f"[bold cyan]🚀 {_('monitor_title')} - {now}[/]",
+                    subtitle=f"[dim]{_('next_update')} {REFRESH_RATE}s | tool by tinchosalvatore[/]",
                     border_style="blue"
                 )
                 
@@ -158,10 +159,10 @@ class UptimeMonitor:
     async def run_once(self) -> List[CheckResult] | None:
         """Ejecuta un único chequeo y retorna los resultados."""
         if not self.load_sites():
-            console.print("[red]Error: No se encontró db.json. Ejecuta db.py primero.[/]")
+            console.print(f"[red]{_('error_db_not_found')}[/]")
             return None
 
-        console.print("[yellow]Ejecutando un único chequeo...[/]")
+        console.print(f"[yellow]{_('checking_once')}[/]")
 
         async with httpx.AsyncClient() as client:
             tasks = [self.check_site(client, site) for site in self.sites]
@@ -172,7 +173,7 @@ class UptimeMonitor:
         
         panel = Panel(
             Align.center(table),
-            title=f"[bold cyan]🚀 UPTIME STATUS - {now}[/]",
+            title=f"[bold cyan]🚀 {_('monitor_status')} - {now}[/]",
             border_style="blue"
         )
         
@@ -195,15 +196,15 @@ if __name__ == "__main__":
                 # Convertimos los objetos CheckResult a dicts
                 results_dicts = [asdict(r) for r in results]
                 report_path = generate_report(results_dicts)
-                console.print(f"\n[bold green]✔ Reporte generado exitosamente en:[/bold green] [cyan]{os.path.abspath(report_path)}[/]")
+                console.print(f"\n[bold green]{_('report_success')}[/bold green] [cyan]{os.path.abspath(report_path)}[/]")
         elif args.fast:
             asyncio.run(monitor.run_once())
         else:
             asyncio.run(monitor.run_loop())
     except KeyboardInterrupt:
         console.clear()
-        console.print("\n[bold green]👋 Monitor detenido correctamente.[/]")
+        console.print(f"\n[bold green]{_('stop_monitor')}[/]")
         sys.exit(0)
     except Exception as e:
-        console.print(f"[bold red]Ha ocurrido un error inesperado: {e}[/]")
+        console.print(f"[bold red]{_('unexpected_error')} {e}[/]")
         sys.exit(1)
