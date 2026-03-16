@@ -12,24 +12,23 @@ Herramienta de monitoreo de disponibilidad y latencia de sitios web en tiempo re
 * **Alto Rendimiento:** Motor asíncrono (`asyncio` + `httpx`) capaz de chequear múltiples sitios simultáneamente.
 * **Interfaz Visual (TUI):** Tablas con formato condicional y colores basados en latencia.
 * **Alertas:** Feedback visual y sonoro (system beep) ante fallos en los servicios.
-* **Reportes en HTML:** Reportes profesionales con temática oscura guardados en el directorio `reports/`.
+* **Reportes HTML:** Reportes profesionales con tema oscuro y soporte para directorio de salida personalizado.
 
 ---
 ## 📂 Estructura del Proyecto
 
 ```text
 .
+├── config_paths.py   # Gestión global de rutas (XDG standard)
 ├── monitor.py        # Script principal de monitoreo
-├── db.py             # CLI para gestión de base de datos
+├── db.py             # CLI de gestión de base de datos
 ├── i18n.py           # Motor de internacionalización
-├── report.py         # Lógica para generación de reportes
-├── db.json           # Base de datos de sitios
-├── config.json       # Configuración de la app (idioma, etc.)
+├── report.py         # Lógica de generación de reportes
 ├── templates/        # Plantillas HTML/CSS para reportes
-├── reports/          # Directorio de reportes generados
 ├── setup.sh          # Instalador interactivo
 └── uninstall.sh      # Desinstalador interactivo
 ```
+
 
 ## 🛠️ Instalación
 
@@ -73,10 +72,20 @@ sstatus
     ```bash
     sstatus -r
     ```
-*   **Combinar para máxima eficiencia:**
+*   **Directorio de Reportes Personalizado:**
+    Especifica dónde guardar el reporte HTML.
     ```bash
-    sstatus -f -r
+    sstatus -r -o /ruta/a/mis_reportes
     ```
+
+### ⚙️ Configuración y Datos
+La aplicación sigue las convenciones del sistema operativo para mantener tu carpeta personal limpia:
+- **Base de Datos (`db.json`):** Ubicada en tu directorio de configuración de usuario (ej. `~/.config/server-status-cli/`).
+- **Ajustes (`config.json`):** Igual que la base de datos.
+- **Reportes por Defecto:** La carpeta **Descargas** de tu sistema (detectada automáticamente por el SO).
+
+*Esto asegura que tus datos persistan incluso si mueves o actualizas la carpeta del proyecto.*
+
 
 ---
 ## 🗑️ Desinstalación

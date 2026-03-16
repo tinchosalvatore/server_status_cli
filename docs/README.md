@@ -12,21 +12,19 @@ Real-time website availability and latency monitoring tool, designed to run dire
 * **High Performance:** Asynchronous engine (`asyncio` + `httpx`) capable of checking multiple sites simultaneously.
 * **Visual Interface (TUI):** Tables with conditional formatting and latency-based colors.
 * **Alerts:** Visual and audible feedback (system beep) on service failures.
-* **HTML Reports:** Professional dark-themed reports saved in the `reports/` directory.
+* **HTML Reports:** Professional dark-themed reports with custom output directory support.
 
 ---
 ## 📂 Project Structure
 
 ```text
 .
+├── config_paths.py   # Global path management (XDG standard)
 ├── monitor.py        # Main monitoring script
 ├── db.py             # Database management CLI
 ├── i18n.py           # Internationalization engine
 ├── report.py         # Report generation logic
-├── db.json           # Site database
-├── config.json       # App configuration (language, etc.)
 ├── templates/        # HTML/CSS templates for reports
-├── reports/          # Generated reports directory
 ├── setup.sh          # Interactive installer
 └── uninstall.sh      # Interactive uninstaller
 ```
@@ -73,10 +71,19 @@ sstatus
     ```bash
     sstatus -r
     ```
-*   **Combine for maximum efficiency:**
+*   **Custom Report Output:**
+    Specify where to save the HTML report.
     ```bash
-    sstatus -f -r
+    sstatus -r -o /path/to/my_reports
     ```
+
+### ⚙️ Configuration & Data
+The app follows standard OS conventions to keep your home directory clean:
+- **Database (`db.json`):** Located in your user config directory (e.g., `~/.config/server-status-cli/`).
+- **Settings (`config.json`):** Same as the database.
+- **Default Reports:** Your system's **Downloads** folder (detected automatically by OS).
+
+*This ensures your data persists even if you move or update the project folder.*
 
 ---
 ## 🗑️ Uninstallation

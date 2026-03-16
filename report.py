@@ -1,9 +1,11 @@
 import os
 import json
+import shutil
 from datetime import datetime
 from typing import List
 from jinja2 import Environment, FileSystemLoader
 from i18n import get_all_strings
+from config_paths import REPORTS_DIR, TEMPLATES_DIR, ensure_dirs
 
 def get_latency_class(latency: float) -> str:
     """Retorna una clase CSS basada en la latencia."""
@@ -13,16 +15,17 @@ def get_latency_class(latency: float) -> str:
         return "latency-medium"
     return "latency-fast"
 
-def generate_report(results: List[dict], output_dir: str = "reports"):
+def generate_report(results: List[dict], output_dir: str = REPORTS_DIR):
     """
     Genera un reporte HTML a partir de una lista de resultados de chequeo.
     """
-    # 1. Asegurar que el directorio de reportes exista
+    # 1. Asegurar que los directorios existan
+    ensure_dirs()
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    # 2. Configurar Jinja2
-    env = Environment(loader=FileSystemLoader("templates"))
+    # 2. Configurar Jinja2 (Ruta absoluta a templates)
+    env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
     template = env.get_template("report_template.html")
 
     # 3. Obtener traducciones
@@ -55,12 +58,10 @@ def generate_report(results: List[dict], output_dir: str = "reports"):
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(html_content)
 
-    # Copiar el CSS al directorio del reporte para que sea autocontenido
-    css_source_path = "templates/style.css"
+    # Copiar el CSS al directorio del reporte de forma segura
+    css_source_path = os.path.join(TEMPLATES_DIR, "style.css")
     css_dest_path = os.path.join(output_dir, "style.css")
     if os.path.exists(css_source_path):
-        with open(css_source_path, "r", encoding="utf-8") as f_in, \
-             open(css_dest_path, "w", encoding="utf-8") as f_out:
-            f_out.write(f_in.read())
+        shutil.copy2(css_source_path, css_dest_path)
             
     return report_path

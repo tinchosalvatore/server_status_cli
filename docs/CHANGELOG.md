@@ -14,9 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Installation Overhaul:** `setup.sh` now features an interactive language selector and creates a dedicated virtual environment in `~/.server_status_cli_app` with shims in `~/.local/bin`.
 - **Database Manager:** Updated `db.py` to v1.2 with multi-language support.
-
-### Upgrades
 - **README:** Updated the README file with the new flags, crosslink and new features.
+
+### Bug Fix
+- Report export was created were the script was executed, know it writes them in the correct directory.
 
 
 ## [1.2.0] - 2026-01-28

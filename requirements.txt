@@ -1,3 +1,4 @@
 rich
 httpx
 jinja2
+platformdirs

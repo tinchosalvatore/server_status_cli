@@ -50,6 +50,7 @@ done
 
 APP_DIR="$HOME/.server_status_cli_app"
 BIN_DIR="$HOME/.local/bin"
+CONFIG_DIR="$HOME/.config/server-status-cli"
 EXECUTABLE_NAME="sstatus"
 DB_EXECUTABLE_NAME="sstatus-db"
 PROJECT_DIR=$(pwd)
@@ -73,24 +74,23 @@ python3 -m venv "$APP_DIR"
 echo "$L_DEPS"
 "$APP_DIR/bin/pip" install -r requirements.txt --upgrade --quiet
 
-# 4. Configurar Idioma
-echo "{\"language\": \"$LANG_CODE\"}" > "$PROJECT_DIR/config.json"
+# 4. Configurar Idioma en la nueva ruta XDG
+mkdir -p "$CONFIG_DIR"
+echo "{\"language\": \"$LANG_CODE\"}" > "$CONFIG_DIR/config.json"
 
-# 5. Crear los Shims (Ejecutables)
+# 5. Crear los Shims (Ejecutables) - Ya no necesitan cd porque el código usa rutas absolutas
 echo "$L_LINK $BIN_DIR..."
 mkdir -p "$BIN_DIR"
 
 # Shim para el monitor
 cat > "$BIN_DIR/$EXECUTABLE_NAME" <<EOF
 #!/bin/bash
-cd "$PROJECT_DIR"
 "$APP_DIR/bin/python" "$PROJECT_DIR/monitor.py" "\$@"
 EOF
 
 # Shim para la base de datos
 cat > "$BIN_DIR/$DB_EXECUTABLE_NAME" <<EOF
 #!/bin/bash
-cd "$PROJECT_DIR"
 "$APP_DIR/bin/python" "$PROJECT_DIR/db.py" "\$@"
 EOF
 

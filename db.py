@@ -6,9 +6,9 @@ from rich.prompt import Prompt
 from rich.panel import Panel
 
 from i18n import _
+from config_paths import DB_FILE, ensure_dirs
 
 # Constantes
-DB_FILE = "db.json"
 console = Console()
 
 def load_db() -> list[dict[str, str]]:

@@ -45,7 +45,7 @@ done
 APP_DIR="$HOME/.server_status_cli_app"
 BIN_FILE="$HOME/.local/bin/sstatus"
 DB_BIN_FILE="$HOME/.local/bin/sstatus-db"
-PROJECT_DIR=$(pwd)
+CONFIG_DIR="$HOME/.config/server-status-cli"
 
 echo ""
 echo "$L_START"
@@ -68,14 +68,13 @@ else
 fi
 
 # 2. Gestión de Datos (Interactivo)
-if [ -f "$PROJECT_DIR/db.json" ] || [ -f "$PROJECT_DIR/config.json" ]; then
+if [ -d "$CONFIG_DIR" ]; then
     echo ""
     echo "$L_DATA_WARN"
     read -p "$L_DATA_ASK" -n 1 -r
     echo ""
     if [[ $REPLY =~ ^[SsYy]$ ]]; then
-        rm -f "$PROJECT_DIR/db.json"
-        rm -f "$PROJECT_DIR/config.json"
+        rm -rf "$CONFIG_DIR"
         echo "$L_DATA_DEL"
     else
         echo "$L_DATA_KEEP"

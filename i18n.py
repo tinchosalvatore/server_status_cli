@@ -1,8 +1,6 @@
 import json
 import os
-
-# Ruta al archivo de configuración
-CONFIG_FILE = "config.json"
+from config_paths import CONFIG_FILE
 
 STRINGS = {
     "es": {

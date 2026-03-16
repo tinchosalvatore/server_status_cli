@@ -17,9 +17,9 @@ from rich.live import Live
 
 from report import generate_report
 from i18n import _
+from config_paths import DB_FILE, ensure_dirs, REPORTS_DIR
 
 # Configuración
-DB_FILE = "db.json"
 REFRESH_RATE = 10  # Segundos entre chequeos
 console = Console()
 
@@ -182,9 +182,11 @@ class UptimeMonitor:
 
 
 if __name__ == "__main__":
+    ensure_dirs()
     parser = argparse.ArgumentParser(description="Monitor de estado de sitios web.")
     parser.add_argument("-f", "--fast", action="store_true", help="Si se especifica, ejecuta el chequeo una sola vez y sale.")
     parser.add_argument("-r", "--report", action="store_true", help="Genera un reporte HTML con el estado actual.")
+    parser.add_argument("-o", "--output", type=str, default=REPORTS_DIR, help="Directorio donde se guardará el reporte.")
     args = parser.parse_args()
 
     monitor = UptimeMonitor(DB_FILE)
@@ -195,7 +197,7 @@ if __name__ == "__main__":
             if results:
                 # Convertimos los objetos CheckResult a dicts
                 results_dicts = [asdict(r) for r in results]
-                report_path = generate_report(results_dicts)
+                report_path = generate_report(results_dicts, output_dir=args.output)
                 console.print(f"\n[bold green]{_('report_success')}[/bold green] [cyan]{os.path.abspath(report_path)}[/]")
         elif args.fast:
             asyncio.run(monitor.run_once())
