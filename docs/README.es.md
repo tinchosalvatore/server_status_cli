@@ -1,5 +1,7 @@
 # 🚀 CLI Uptime Monitor
 
+*Read in [English](README.md).*
+
 Herramienta de monitoreo de disponibilidad y latencia de sitios web en tiempo real, diseñada para ejecutarse directamente en la terminal. Construida con **Python 3.10+**, utiliza **AsyncIO** para chequeos concurrentes de alto rendimiento y **Rich** para una interfaz visual moderna.
 
 ## ✨ Características
@@ -11,6 +13,7 @@ Herramienta de monitoreo de disponibilidad y latencia de sitios web en tiempo re
 * **Gestión Persistente:** Base de datos ligera en JSON para administrar la lista de clientes y servicios sin tocar el código.
 * **Reportes en HTML:** Genera un reporte HTML profesional con temática oscura que incluye los resultados de los chequeos, guardado en el directorio `reports`.
 
+---
 ## 📂 Estructura del Proyecto
 
 ```text
@@ -48,6 +51,7 @@ chmod +x setup.sh
 source venv/bin/activate
 ```
 
+---
 ## 🚀 Uso
 
 El flujo de trabajo se divide en dos pasos: configuración y monitoreo.
@@ -73,14 +77,31 @@ Una vez configurados los sitios, lanza el monitor.
     * El dashboard se actualizará cada 10 segundos (configurable).
     * Presiona `Ctrl+C` para detenerlo.
 
+*   **Monitoreo único instantáneo:**
+    ```bash
+    python monitor.py -f
+    # o
+    python monitor.py --fast
+    ```
+    * Este comando ejecuta un único chequeo, sin consumir toda la terminal.
+
 *   **Para generar un reporte en HTML:**
     ```bash
     python monitor.py -r
     # o
     python monitor.py --report
     ```
-    * Este comando ejecuta un único chequeo y guarda un reporte HTML detallado en el directorio `reports/`.
+    * Este comando ejecuta un único chequeo y guarda un reporte HTML detallado con estilos CSS en el directorio `reports/`.
 
+*   **Siéntete libre de combinar ambos comandos:**
+    ```bash
+    python monitor.py -f -r
+    # o
+    python monitor.py --fast --report
+    ```
+    * Esta es la forma más eficiente de chequear múltiples sitios a la vez y obtener una salida visualmente atractiva.
+
+---
 ## ⚙️ Requisitos
 
 * Python 3.10 o superior.
@@ -95,4 +116,4 @@ Una vez configurados los sitios, lanza el monitor.
 
 ---
 
-Hecho con 🖤 y Python.
+Hecho con 🖤 y Python por [Martin Salvatore](https://github.com/tinchosalvatore).

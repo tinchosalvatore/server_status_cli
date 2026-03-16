@@ -1,5 +1,7 @@
 # 🚀 CLI Uptime Monitor
 
+*Leer en [Español](README.es.md).*
+
 Real-time website availability and latency monitoring tool, designed to run directly in the terminal. Built with **Python 3.10+**, it uses **AsyncIO** for high-performance concurrent checks and **Rich** for a modern visual interface.
 
 ## ✨ Features
@@ -11,6 +13,7 @@ Real-time website availability and latency monitoring tool, designed to run dire
 * **Persistent Management:** Lightweight JSON database to manage the list of clients and services without touching the code.
 * **HTML Reports:** Generates a professional, dark-themed HTML report with the check results, saved in the `reports` directory.
 
+---
 ## 📂 Project Structure
 
 ```text
@@ -54,6 +57,7 @@ source venv/bin/activate
 
 ```
 
+---
 ## 🚀 Usage
 
 The workflow is divided into two steps: configuration and monitoring.
@@ -80,14 +84,31 @@ Once the sites are configured, launch the monitor.
     * The dashboard will update every 10 seconds (configurable).
     * Press `Ctrl+C` to stop.
 
+*   **Instant unique monitoring:**
+    ```bash
+    python monitor.py -f
+    # or
+    python monitor.py --fast
+    ```
+    * This command runs a single check, without consuming the hole terminal use.
+
 *   **To generate an HTML report:**
     ```bash
     python monitor.py -r
     # or
     python monitor.py --report
     ```
-    * This command runs a single check and saves a detailed HTML report in the `reports/` directory.
+    * This command runs a single check and saves a detailed HTML with CSS style report in the `reports/` directory.
 
+*   **Feel free to combine the two commands**
+    ```bash
+    python monitor.py -f -r
+    # or
+    python monitor.py --fast --report
+    ```
+    * For me this is the most efficient way to check multiple sites at once and have the good looking output.
+
+---
 ## ⚙️ Requirements
 
 * Python 3.10 or higher.
@@ -102,4 +123,4 @@ Once the sites are configured, launch the monitor.
 
 ---
 
-Made with 🖤 and Python.
+Made with 🖤 and Python by [Martin Salvatore](https://github.com/tinchosalvatore).
